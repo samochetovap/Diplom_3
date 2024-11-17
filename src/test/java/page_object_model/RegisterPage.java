@@ -18,10 +18,15 @@ public class RegisterPage {
     private final By passwordInputField = By.xpath(".//fieldset[@class = 'Auth_fieldset__1QzWN mb-6'][3]/div/div/input");
     private final By registrationButton = By.xpath(".//form[@class = 'Auth_form__3qKeq mb-20']/button");
     private final By notAvailablePasswordWarning = By.xpath(".//fieldset[@class = 'Auth_fieldset__1QzWN mb-6'][3]/div/p");
+    private final By enterButton = By.xpath(".//a[@class = 'Auth_link__1fOlj']");
 
     public RegisterPage(WebDriver driver) {
         this.driver = driver;
         this.executor = (JavascriptExecutor) driver;
+    }
+
+    public void clickEnterButton() {
+        driver.findElement(enterButton).click();
     }
 
     public void setNameInputField(String name) {
