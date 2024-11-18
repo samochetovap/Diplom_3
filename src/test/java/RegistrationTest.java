@@ -1,3 +1,4 @@
+import builder.DriverBuilder;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -6,12 +7,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import page_object_model.LoginPage;
 import page_object_model.RegisterPage;
 import pojo.User;
 
+import static enums.RouteEnum.REGISTER;
 import static io.restassured.RestAssured.given;
 
 
@@ -23,8 +23,7 @@ public class RegistrationTest {
 
     @Before
     public void initDriver() {
-        driver = new ChromeDriver();
-        driver.get("https://stellarburgers.nomoreparties.site/register");
+        driver = DriverBuilder.buildFromProperty();
     }
 
     @Before
@@ -37,6 +36,7 @@ public class RegistrationTest {
     @Test
     @Step("Успешная регистрация пользователя которого нет в системе")
     public void checkTextExpansion() {
+        driver.get(driver.getCurrentUrl() + "register");
         LoginPage loginPage = new LoginPage(driver);
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.setNameInputField(user.getName());
@@ -52,6 +52,7 @@ public class RegistrationTest {
     @Test
     @Step("Проверка некорректного пароля. Минимальный пароль — шесть символов.")
     public void checkNotAvailablePassword() {
+        driver.get(driver.getCurrentUrl() + REGISTER);
         RegisterPage registerPage = new RegisterPage(driver);
         user.setPassword("12345");
         registerPage.setNameInputField(user.getName());
