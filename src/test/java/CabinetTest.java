@@ -76,8 +76,8 @@ public class CabinetTest {
     }
 
     @Test
-    @Step("Переход из личного кабинета в конструктор по клику на логотип Stellar Burgers")
-    public void routeToMainPageFromCabinetOnStellarBurgersClick() {
+    @Step("Выход по кнопке «Выйти» в личном кабинете.")
+    public void exitFromCabinet() {
         //логин
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
@@ -96,8 +96,8 @@ public class CabinetTest {
     }
 
     @Test
-    @Step("Выход по кнопке «Выйти» в личном кабинете.")
-    public void exitFromCabinet() {
+    @Step("Переход из личного кабинета в конструктор по клику на логотип Stellar Burgers")
+    public void routeToMainPageFromCabinetOnStellarBurgersClick() {
         //логин
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
