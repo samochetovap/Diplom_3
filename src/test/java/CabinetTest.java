@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import page_object_model.AccountProfilePage;
 import page_object_model.HeaderPage;
 import page_object_model.HomePage;
@@ -111,7 +112,7 @@ public class CabinetTest {
         //переход в личный кабинет
         homePage.clickOwnerCabinetLabel();
         accountProfilePage.waitForLoadAccountProfileData();
-        //кликаем на конструктор в хедере
+        //кликаем на Stellar Burger в хедере
         headerPage.clickStellarBurgersLogotype();
         homePage.waitForLoadHomePage();
     }

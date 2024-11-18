@@ -26,7 +26,8 @@ public class RegisterPage {
     }
 
     public void clickEnterButton() {
-        driver.findElement(enterButton).click();
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript("arguments[0].click();", driver.findElement(enterButton));
     }
 
     public void setNameInputField(String name) {
@@ -42,7 +43,8 @@ public class RegisterPage {
     }
 
     public void clickRegistrationButton() {
-        driver.findElement(registrationButton).click();
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript("arguments[0].click();", driver.findElement(registrationButton));
     }
 
     public void waitForNotAvailablePasswordWarning() {

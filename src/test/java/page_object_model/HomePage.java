@@ -27,11 +27,13 @@ public class HomePage {
     }
 
     public void clickOwnerCabinetLabel() {
-        driver.findElement(ownerCabinetLabel).click();
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript("arguments[0].click();", driver.findElement(ownerCabinetLabel));
     }
 
     public void clickEnterAccountButton() {
-        driver.findElement(enterAccountButton).click();
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript("arguments[0].click();", driver.findElement(enterAccountButton));
     }
 
     public void waitForLoadHomePage() {

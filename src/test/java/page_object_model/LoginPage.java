@@ -36,7 +36,9 @@ public class LoginPage {
 
     public void clickLoginButton(){
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(
-            ExpectedConditions.visibilityOfAllElementsLocatedBy(loginButton)).get(0).click();
+            ExpectedConditions.visibilityOfAllElementsLocatedBy(loginButton));
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript("arguments[0].click();", driver.findElement(loginButton));
     }
 
 }
