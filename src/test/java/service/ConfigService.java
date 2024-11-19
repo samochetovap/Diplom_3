@@ -8,7 +8,17 @@ import java.util.Properties;
 public class ConfigService {
     private static final Properties properties = new Properties();;
 
-    public ConfigService() {
+    public static String getDriverType() {
+        readProp();
+        return properties.getProperty("browser");
+    }
+
+    public static String getMainUrl() {
+        readProp();
+        return properties.getProperty("mainUrl");
+    }
+
+    private static void readProp(){
         BufferedReader bufferedReader;
         try {
             String propPath = "src/test/resources/application.properties";
@@ -18,14 +28,6 @@ public class ConfigService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getDriverType() {
-        return properties.getProperty("browser");
-    }
-
-    public String getMainUrl() {
-        return properties.getProperty("mainUrl");
     }
 
 }

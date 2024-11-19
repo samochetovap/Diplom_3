@@ -1,5 +1,6 @@
-package page_object_model;
+package pom;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -24,29 +25,30 @@ public class RegisterPage {
         this.driver = driver;
         this.executor = (JavascriptExecutor) driver;
     }
-
+    @Step("Клик на кнопку войти")
     public void clickEnterButton() {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         executor.executeScript("arguments[0].click();", driver.findElement(enterButton));
     }
-
+    @Step("Ввод в поле имя")
     public void setNameInputField(String name) {
         driver.findElement(nameInputField).sendKeys(name);
     }
-
+    @Step("Ввод в поле email")
     public void setEmailInputField(String email) {
         driver.findElement(emailInputField).sendKeys(email);
     }
-
+    @Step("Ввод в поле пароль")
     public void setPasswordInputField(String password) {
         driver.findElement(passwordInputField).sendKeys(password);
     }
-
+    @Step("Зарегистрироваться")
     public void clickRegistrationButton() {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         executor.executeScript("arguments[0].click();", driver.findElement(registrationButton));
     }
 
+    @Step("Ожидание предупреждения о невалидном пароле")
     public void waitForNotAvailablePasswordWarning() {
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(
                 ExpectedConditions.visibilityOf(driver.findElement(notAvailablePasswordWarning)));

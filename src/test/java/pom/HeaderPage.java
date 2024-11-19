@@ -1,5 +1,6 @@
-package page_object_model;
+package pom;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -21,6 +22,7 @@ public class HeaderPage {
         this.driver = driver;
     }
 
+    @Step("Клик на Конструктор")
     public void clickConstructorLabel() {
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(
                 ExpectedConditions.visibilityOfAllElementsLocatedBy(constructorLabel));
@@ -28,6 +30,7 @@ public class HeaderPage {
         executor.executeScript("arguments[0].click();", driver.findElement(constructorLabel));
     }
 
+    @Step("Клик на Логотип StellarBurgers")
     public void clickStellarBurgersLogotype() {
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(
                 ExpectedConditions.visibilityOfAllElementsLocatedBy(stellarBurgersLogotype));

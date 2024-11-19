@@ -1,4 +1,8 @@
+import api.UserApi;
+import builder.DriverBuilder;
+import builder.UserBuilder;
 import io.qameta.allure.Step;
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -7,12 +11,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import page_object_model.AccountProfilePage;
-import page_object_model.HeaderPage;
-import page_object_model.HomePage;
-import page_object_model.LoginPage;
+import pom.AccountProfilePage;
+import pom.HeaderPage;
+import pom.HomePage;
+import pom.LoginPage;
 import pojo.User;
+import service.ConfigService;
 
 import static io.restassured.RestAssured.given;
 
@@ -24,22 +28,18 @@ public class CabinetTest {
 
     @Before
     public void initDriver() {
-        driver = new ChromeDriver();
-        driver.get("https://stellarburgers.nomoreparties.site/register");
+        driver = DriverBuilder.buildFromProperty();
     }
 
     @Before
-    @Step("Создать и зарегестрировать тестового пользователя")
-    public void initAndRegistrationUser() {
-        RestAssured.baseURI = "https://stellarburgers.nomoreparties.site/";
-        user = new User("some12332112332111@gmail.com", "password12345", "some12332112332111@gmail.com");
-        given().contentType(ContentType.JSON)
-                .and().body(user).and()
-                .post("/api/auth/register");
+    public void initUser() {
+        RestAssured.baseURI = ConfigService.getMainUrl();
+        user = UserBuilder.generateUser();
+        UserApi.register(user);
     }
 
     @Test
-    @Step("Переход в личный кабинет по клику на «Личный кабинет»")
+    @DisplayName("Переход в личный кабинет по клику на «Личный кабинет»")
     public void routeToOwnerCabinet() {
         //логин
         HomePage homePage = new HomePage(driver);
@@ -56,7 +56,7 @@ public class CabinetTest {
     }
 
     @Test
-    @Step("Переход из личного кабинета в конструктор по клику на «Конструктор»")
+    @DisplayName("Переход из личного кабинета в конструктор по клику на «Конструктор»")
     public void routeToMainPageFromCabinetOnConstructorClick() {
         //логин
         HomePage homePage = new HomePage(driver);
@@ -77,7 +77,7 @@ public class CabinetTest {
     }
 
     @Test
-    @Step("Выход по кнопке «Выйти» в личном кабинете.")
+    @DisplayName("Выход по кнопке «Выйти» в личном кабинете.")
     public void exitFromCabinet() {
         //логин
         HomePage homePage = new HomePage(driver);
@@ -97,7 +97,7 @@ public class CabinetTest {
     }
 
     @Test
-    @Step("Переход из личного кабинета в конструктор по клику на логотип Stellar Burgers")
+    @DisplayName("Переход из личного кабинета в конструктор по клику на логотип Stellar Burgers")
     public void routeToMainPageFromCabinetOnStellarBurgersClick() {
         //логин
         HomePage homePage = new HomePage(driver);
@@ -127,16 +127,7 @@ public class CabinetTest {
         deleteUserIfExists(user);
     }
 
-    @Step("Удалить тестового пользователя если зарегестрирован")
     private void deleteUserIfExists(User user) {
-        Response responseLogin = given()
-                .contentType(ContentType.JSON)
-                .and().body(user)
-                .and().post("/api/auth/login");
-        if (responseLogin.statusCode() == 200) {
-            String accessToken = responseLogin.then().extract().body().path("accessToken").toString();
-            given().header("authorization", accessToken).contentType(ContentType.JSON)
-                    .and().delete("/api/auth/user");
-        }
+        UserApi.deleteUserIfExist(user);
     }
 }

@@ -7,7 +7,7 @@ import io.restassured.response.Response;
 import pojo.User;
 import service.ConfigService;
 
-import static config.ApiPath.LOGIN;
+import static config.ApiPath.*;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.responseSpecification;
 
@@ -26,16 +26,23 @@ public class UserApi {
                 .and().post(LOGIN);
     }
 
-    @Step("Удаление зарегестрированного пользователя")
+    @Step("Регистрация пользователя через апи")
+    public static Response register(User user){
+        return  given().contentType(ContentType.JSON)
+                .and().body(user).and()
+                .post(REGISTER);
+    }
+
+    @Step("Удаление зарегистрированного пользователя")
     public static void deleteUser(Response loginResponse){
         if (loginResponse.statusCode() == 200) {
             String accessToken = loginResponse.then().extract().body().path("accessToken").toString();
             given().header("authorization", accessToken).contentType(ContentType.JSON)
-                    .and().delete("/api/auth/user");
+                    .and().delete(AUTH);
         }
     }
 
-    @Step("Удаление пользователя если он зарегестрирован")
+    @Step("Попытка удаления пользователя если он есть в системе")
     public static void deleteUserIfExist(User user){
         Response deleteResponse = login(user);
         deleteUser(deleteResponse);

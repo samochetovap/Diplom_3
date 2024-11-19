@@ -1,4 +1,8 @@
+import api.UserApi;
+import builder.DriverBuilder;
+import builder.UserBuilder;
 import io.qameta.allure.Step;
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -7,13 +11,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import page_object_model.ForgotPasswordPage;
-import page_object_model.HomePage;
-import page_object_model.LoginPage;
-import page_object_model.RegisterPage;
+import pom.ForgotPasswordPage;
+import pom.HomePage;
+import pom.LoginPage;
+import pom.RegisterPage;
 import pojo.User;
+import service.ConfigService;
 
+import static enums.RouteEnum.FORGOT_PASSWORD;
+import static enums.RouteEnum.REGISTER;
 import static io.restassured.RestAssured.given;
 
 public class LoginTest {
@@ -24,23 +30,19 @@ public class LoginTest {
 
     @Before
     public void initDriver() {
-        driver = new ChromeDriver();
+        driver = DriverBuilder.buildFromProperty();
     }
 
     @Before
-    @Step("Создать и зарегестрировать тестового пользователя")
-    public void initAndRegistrationUser() {
-        RestAssured.baseURI = "https://stellarburgers.nomoreparties.site/";
-        user = new User("some12332112332111@gmail.com", "password12345", "some12332112332111@gmail.com");
-        given().contentType(ContentType.JSON)
-                .and().body(user).and()
-                .post("/api/auth/register");
+    public void initUser() {
+        RestAssured.baseURI = ConfigService.getMainUrl();
+        user = UserBuilder.generateUser();
+        UserApi.register(user);
     }
 
     @Test
-    @Step("Вход по кнопке «Войти в аккаунт» на главной")
+    @DisplayName("Вход по кнопке «Войти в аккаунт» на главной")
     public void checkLoginFromEnterAccountButton() {
-        driver.get("https://stellarburgers.nomoreparties.site/");
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
         homePage.clickEnterAccountButton();
@@ -51,9 +53,8 @@ public class LoginTest {
     }
 
     @Test
-    @Step("Вход через кнопку «Личный кабинет»")
+    @DisplayName("Вход через кнопку «Личный кабинет»")
     public void checkLoginFromOwnerCabinetLabel() {
-        driver.get("https://stellarburgers.nomoreparties.site/");
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
         homePage.clickOwnerCabinetLabel();
@@ -64,9 +65,9 @@ public class LoginTest {
     }
 
     @Test
-    @Step("Вход через кнопку в форме регистрации")
+    @DisplayName("Вход через кнопку в форме регистрации")
     public void checkLoginFromEnterInRegistrationPage() {
-        driver.get("https://stellarburgers.nomoreparties.site/register");
+        driver.get(driver.getCurrentUrl() + REGISTER.getValue());
         RegisterPage registerPage = new RegisterPage(driver);
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = new HomePage(driver);
@@ -78,9 +79,9 @@ public class LoginTest {
     }
 
     @Test
-    @Step("Вход через кнопку в форме восстановления пароля")
+    @DisplayName("Вход через кнопку в форме восстановления пароля")
     public void checkLoginFromEnterInForgotPasswordPage() {
-        driver.get("https://stellarburgers.nomoreparties.site/forgot-password");
+        driver.get(driver.getCurrentUrl() + FORGOT_PASSWORD.getValue());
         ForgotPasswordPage forgotPasswordPage = new ForgotPasswordPage(driver);
         LoginPage loginPage = new LoginPage(driver);
         HomePage homePage = new HomePage(driver);
@@ -101,17 +102,8 @@ public class LoginTest {
         deleteUserIfExists(user);
     }
 
-    @Step("Удалить тестового пользователя если зарегестрирован")
     private void deleteUserIfExists(User user) {
-        Response responseLogin = given()
-                .contentType(ContentType.JSON)
-                .and().body(user)
-                .and().post("/api/auth/login");
-        if (responseLogin.statusCode() == 200) {
-            String accessToken = responseLogin.then().extract().body().path("accessToken").toString();
-            given().header("authorization", accessToken).contentType(ContentType.JSON)
-                    .and().delete("/api/auth/user");
-        }
+        UserApi.deleteUserIfExist(user);
     }
 
 }

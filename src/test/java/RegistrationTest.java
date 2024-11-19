@@ -1,18 +1,18 @@
+import api.UserApi;
 import builder.DriverBuilder;
-import io.qameta.allure.Step;
+import builder.UserBuilder;
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import page_object_model.LoginPage;
-import page_object_model.RegisterPage;
 import pojo.User;
+import pom.LoginPage;
+import pom.RegisterPage;
+import service.ConfigService;
 
 import static enums.RouteEnum.REGISTER;
-import static io.restassured.RestAssured.given;
 
 
 public class RegistrationTest {
@@ -28,15 +28,14 @@ public class RegistrationTest {
 
     @Before
     public void initUser() {
-        RestAssured.baseURI = "https://stellarburgers.nomoreparties.site/";
-        user = new User("some12332112332111@gmail.com", "somepassword12345", "someUserName");
-
+        RestAssured.baseURI = ConfigService.getMainUrl();
+        user = UserBuilder.generateUser();
     }
 
     @Test
-    @Step("Успешная регистрация пользователя которого нет в системе")
+    @DisplayName("Успешная регистрация пользователя которого нет в системе")
     public void checkTextExpansion() {
-        driver.get(driver.getCurrentUrl() + "register");
+        driver.get(driver.getCurrentUrl() + REGISTER.getValue());
         LoginPage loginPage = new LoginPage(driver);
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.setNameInputField(user.getName());
@@ -44,15 +43,13 @@ public class RegistrationTest {
         registerPage.setEmailInputField(user.getEmail());
         registerPage.clickRegistrationButton();
         loginPage.waitForLoadLoginPage();
-        given().contentType(ContentType.JSON)
-                .and().body(user).and()
-                .post("/api/auth/login").then().statusCode(200);
+        UserApi.login(user).then().statusCode(200);
     }
 
     @Test
-    @Step("Проверка некорректного пароля. Минимальный пароль — шесть символов.")
+    @DisplayName("Проверка некорректного пароля. Минимальный пароль — шесть символов.")
     public void checkNotAvailablePassword() {
-        driver.get(driver.getCurrentUrl() + REGISTER);
+        driver.get(driver.getCurrentUrl() + REGISTER.getValue());
         RegisterPage registerPage = new RegisterPage(driver);
         user.setPassword("12345");
         registerPage.setNameInputField(user.getName());
@@ -60,9 +57,6 @@ public class RegistrationTest {
         registerPage.setEmailInputField(user.getEmail());
         registerPage.clickRegistrationButton();
         registerPage.waitForNotAvailablePasswordWarning();
-        given().contentType(ContentType.JSON)
-                .and().body(user).and()
-                .post("/api/auth/login").then().statusCode(401);
     }
 
     @After
@@ -75,16 +69,8 @@ public class RegistrationTest {
         deleteUserIfExists(user);
     }
 
-    @Step("Удалить тестового пользователя если зарегестрирован")
+
     private void deleteUserIfExists(User user) {
-        Response responseLogin = given()
-                .contentType(ContentType.JSON)
-                .and().body(user)
-                .and().post("/api/auth/login");
-        if (responseLogin.statusCode() == 200) {
-            String accessToken = responseLogin.then().extract().body().path("accessToken").toString();
-            given().header("authorization", accessToken).contentType(ContentType.JSON)
-                    .and().delete("/api/auth/user");
-        }
+        UserApi.deleteUserIfExist(user);
     }
 }

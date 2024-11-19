@@ -1,5 +1,6 @@
-package page_object_model;
+package pom;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -24,16 +25,19 @@ public class LoginPage {
         this.executor = (JavascriptExecutor) driver;
     }
 
+    @Step("Ожидание загрузки страницы логина")
     public void waitForLoadLoginPage() {
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(
                 ExpectedConditions.visibilityOf(driver.findElement(emailInputField)));
     }
 
+    @Step("Ввод в поля логина и email")
     public void setLoginField(String email, String password) {
         driver.findElement(emailInputField).sendKeys(email);
         driver.findElement(passwordInputField).sendKeys(password);
     }
 
+    @Step("Клик по кнопке войти")
     public void clickLoginButton(){
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(
             ExpectedConditions.visibilityOfAllElementsLocatedBy(loginButton));

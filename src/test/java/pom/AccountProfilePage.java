@@ -1,5 +1,6 @@
-package page_object_model;
+package pom;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -20,11 +21,13 @@ public class AccountProfilePage {
         this.driver = driver;
     }
 
+    @Step("Ожидание загрузки страницы профиля")
     public void waitForLoadAccountProfileData() {
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(
                 ExpectedConditions.visibilityOf(driver.findElement(accountProfileData)));
     }
 
+    @Step("Клик на кнопку Выход")
     public void clickExitButton() {
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(
                 ExpectedConditions.visibilityOfAllElementsLocatedBy(exitButton));
